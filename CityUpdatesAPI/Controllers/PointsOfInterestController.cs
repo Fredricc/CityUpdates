@@ -19,7 +19,7 @@ namespace CityUpdatesAPI.Controllers
             }
             return Ok( city.PointsOfInterest);
         }
-        [HttpGet("{pointofinterestDto}", Name = "GetPointOfInterest")]
+        [HttpGet("{pointofinterestid}", Name = "GetPointOfInterest")]
         public ActionResult<PointOfInterestDto> GetPointOfInterest(
             int cityId, int pointOfInterestId)
         {
@@ -53,7 +53,7 @@ namespace CityUpdatesAPI.Controllers
 
             // demo purposes - to be improved
             var maxPointOfInterestId = CitiesDataStore.Current.Cities.SelectMany(
-                city=> city.PointsOfInterest).Max(p => p.Id);
+                c => c.PointsOfInterest).Max(p => p.Id);
 
             var finalPointOfInterest = new PointOfInterestDto()
             {
