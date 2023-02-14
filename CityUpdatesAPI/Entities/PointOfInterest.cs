@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CityUpdatesAPI.Entities
 {
-    public class PointsOfInterest
+    public class PointOfInterest
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,7 +17,7 @@ namespace CityUpdatesAPI.Entities
         [ForeignKey("CityId")]
         public City? City { get; set; }
         public int CityId { get; set; }
-        public PointsOfInterest(string name)
+        public PointOfInterest(string name)
         {
             Name = name;
         }
