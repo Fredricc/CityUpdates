@@ -41,7 +41,8 @@ namespace CityUpdatesAPI.Services
         public async Task<IEnumerable<PointOfInterest>> GetPointOfInterestForCityAsync(
             int cityId)
         {
-            throw new NotImplementedException();
+            return await _context.PointsOfInterest
+                .Where(p=> p.CityId ==cityId).ToListAsync();
         }
     }
 }
