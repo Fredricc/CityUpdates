@@ -71,63 +71,58 @@ namespace CityUpdatesAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<PointOfInterestDto> CreatePointOfInterest(
+        public async  Task<ActionResult<PointOfInterestDto>> CreatePointOfInterest(
             int cityId,
             PointOfInterestForCreationDto pointOfInterest)
         { 
-            var city = _citiesDataStore.Cities
-                .FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            if (!await _cityInfoRepository.CityExistsAsync(cityId))
             { 
                 return NotFound();
             }
 
-            // demo purposes - to be improved
-            var maxPointOfInterestId = _citiesDataStore.Cities.SelectMany(
-                c => c.PointsOfInterest).Max(p => p.Id);
+            var finalPointOfInterest = _mapper.Map<Entities.PointOfInterest> (pointOfInterest);
+          
+            await _cityInfoRepository.AddPointOfInterestForCityAsync(
+                cityId, finalPointOfInterest);
 
-            var finalPointOfInterest = new PointOfInterestDto()
-            {
-                Id = ++maxPointOfInterestId,
-                Name = pointOfInterest.Name,
-                Description = pointOfInterest.Description
-            };
+            await _cityInfoRepository.SaveChangesAsync();
 
-            city.PointsOfInterest.Add(finalPointOfInterest);
+            var createdPointOfInterestToReturn =
+                _mapper.Map<Models.PointOfInterestDto>(finalPointOfInterest);
 
             return CreatedAtRoute("GetPointOfInterest",
                 new
                 {
                     CityId = cityId,
-                    pointOfInterestId = finalPointOfInterest.Id
+                    pointOfInterestId = createdPointOfInterestToReturn.Id
                 },
-                finalPointOfInterest);
+                createdPointOfInterestToReturn);
         }
 
-        [HttpPut("{pointofiinterestid}")]
+        //[HttpPut("{pointofiinterestid}")]
 
-        public ActionResult UpdatePointOfInterest(int cityId, int pointOfInterestId,
-            PointOfInterestForUpdateDto pointOfInterest)
-        { 
-            var city = _citiesDataStore.Cities
-                .FirstOrDefault(c => c.Id == cityId);
-            if(city == null) 
-            {
-                return NotFound();
-            }
-            // find point of interest
-            var pointOfInterestFromStore = city.PointsOfInterest
-                .FirstOrDefault(c => c.Id == pointOfInterestId);
-            if(pointOfInterestFromStore == null) 
-            {
-                return NotFound();
-            }
+        //public ActionResult UpdatePointOfInterest(int cityId, int pointOfInterestId,
+        //    PointOfInterestForUpdateDto pointOfInterest)
+        //{ 
+        //    var city = _citiesDataStore.Cities
+        //        .FirstOrDefault(c => c.Id == cityId);
+        //    if(city == null) 
+        //    {
+        //        return NotFound();
+        //    }
+        //    // find point of interest
+        //    var pointOfInterestFromStore = city.PointsOfInterest
+        //        .FirstOrDefault(c => c.Id == pointOfInterestId);
+        //    if(pointOfInterestFromStore == null) 
+        //    {
+        //        return NotFound();
+        //    }
 
-            pointOfInterestFromStore.Name = pointOfInterest.Name;
-            pointOfInterestFromStore.Description = pointOfInterest.Description;
+        //    pointOfInterestFromStore.Name = pointOfInterest.Name;
+        //    pointOfInterestFromStore.Description = pointOfInterest.Description;
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         [HttpPatch("{pointofinterestid}")]
         public ActionResult PartiallyUpdatedPointOfInterest(
