@@ -29,7 +29,7 @@ namespace CityUpdatesAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async  Task<ActionResult> GetCity(
+        public async  Task<IActionResult> GetCity(
             int id, bool includePointOfInterest = false)
         {
             var city = await _cityInfoRepository.GetCityAsync(id, includePointOfInterest);
