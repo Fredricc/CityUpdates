@@ -2,6 +2,7 @@
 using CityUpdatesAPI.Models;
 using CityUpdatesAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace CityUpdatesAPI.Controllers
 {
@@ -31,8 +32,12 @@ namespace CityUpdatesAPI.Controllers
                 pageSize = maxCitiesPageSize;
             }
 
-            var cityEntities = await _cityInfoRepository
+            var (cityEntities, paginationMetadata) = await _cityInfoRepository
                 .GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
+
+            Response.Headers.Add("X-Pagination",
+                                 JsonSerializer.Serialize(paginationMetadata));
+
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
         }
 
