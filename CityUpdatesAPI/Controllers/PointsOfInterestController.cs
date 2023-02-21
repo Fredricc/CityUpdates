@@ -2,6 +2,7 @@
 using CityUpdatesAPI.Entities;
 using CityUpdatesAPI.Models;
 using CityUpdatesAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CityUpdatesAPI.Controllers
 {
     [Route("api/cities/{cityId}/pointsofinterest")]
+    [Authorize]
     [ApiController]
     public class PointsOfInterestController : ControllerBase
     {

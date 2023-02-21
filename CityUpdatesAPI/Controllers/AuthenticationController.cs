@@ -53,7 +53,7 @@ namespace CityUpdatesAPI.Controllers
             public ActionResult<string> Authenticate(
                 AuthenticationRequestBody authenticationRequestBody)
             {
-                // Step 1: validatte the username/ password
+                // Step 1: validate the username/ password
                 var user = ValidateUserCredentials(
                     authenticationRequestBody.UserName,
                     authenticationRequestBody.Password);
