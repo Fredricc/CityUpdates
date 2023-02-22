@@ -13,9 +13,11 @@ namespace CityUpdatesAPI.Controllers
     {
         private readonly IConfiguration _configuration;
 
+        // we won't use this outside of this class, so we can scope it to this namespace
         public class AuthenticationRequestBody
-        { public string? UserName { get; set; }
-          public string? Password { get; set; }
+        {
+            public string? UserName { get; set; }
+            public string? Password { get; set; }
         }
 
         private class CityInfoUser
@@ -32,7 +34,6 @@ namespace CityUpdatesAPI.Controllers
                 string firstName,
                 string lastName,
                 string city)
-
             {
                 UserId = userId;
                 UserName = userName;
@@ -49,21 +50,21 @@ namespace CityUpdatesAPI.Controllers
                 throw new ArgumentNullException(nameof(configuration));
         }
 
-            [HttpPost]
-            public ActionResult<string> Authenticate(
-                AuthenticationRequestBody authenticationRequestBody)
-            {
-                // Step 1: validate the username/ password
-                var user = ValidateUserCredentials(
-                    authenticationRequestBody.UserName,
-                    authenticationRequestBody.Password);
+        [HttpPost("authenticate")]
+        public ActionResult<string> Authenticate(
+            AuthenticationRequestBody authenticationRequestBody)
+        {
+            // Step 1: validate the username/password
+            var user = ValidateUserCredentials(
+                authenticationRequestBody.UserName,
+                authenticationRequestBody.Password);
 
             if (user == null)
             {
                 return Unauthorized();
             }
 
-            // Step2: create a token
+            // Step 2: create a token
             var securityKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
             var signingCredentials = new SigningCredentials(
@@ -83,29 +84,27 @@ namespace CityUpdatesAPI.Controllers
                 DateTime.UtcNow.AddHours(1),
                 signingCredentials);
 
-                var tokenToReturn = new JwtSecurityTokenHandler()
-                .WriteToken(jwtSecurityToken);
+            var tokenToReturn = new JwtSecurityTokenHandler()
+               .WriteToken(jwtSecurityToken);
 
             return Ok(tokenToReturn);
+        }
 
-            }
+        private CityInfoUser ValidateUserCredentials(string? userName, string? password)
+        {
+            // we don't have a user DB or table.  If you have, check the passed-through
+            // username/password against what's stored in the database.
+            //
+            // For demo purposes, we assume the credentials are valid
 
-            private CityInfoUser ValidateUserCredentials(string? userName, string? password)
-            {
-                // we don't have a user DB or table. If you have, check the passed-through
-                // username/password against what's stored in the database.
+            // return a new CityInfoUser (values would normally come from your user DB/table)
+            return new CityInfoUser(
+                1,
+                userName ?? "",
+                "Kevin",
+                "Dockx",
+                "Antwerp");
 
-                // For demo purposes, we assume the credentials are valid
-
-                // return a new CityInfoUser (values would normally come from your user DB/table
-
-                return new CityInfoUser(
-                    1,
-                    userName ?? "",
-                    "Fredrick",
-                    "Njuguna",
-                    "Nairobi"
-                    );
-            }
+        }
     }
 }

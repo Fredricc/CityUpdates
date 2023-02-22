@@ -19,9 +19,9 @@ namespace CityUpdatesAPI.Controllers
         public CitiesController(ICityInfoRepository cityInfoRepository,
             IMapper mapper)
         {
-            _cityInfoRepository = cityInfoRepository ?? 
+            _cityInfoRepository = cityInfoRepository ??
                 throw new ArgumentNullException(nameof(cityInfoRepository));
-            _mapper = mapper ?? 
+            _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -38,27 +38,27 @@ namespace CityUpdatesAPI.Controllers
                 .GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
 
             Response.Headers.Add("X-Pagination",
-                                 JsonSerializer.Serialize(paginationMetadata));
+                JsonSerializer.Serialize(paginationMetadata));
 
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
         }
 
         [HttpGet("{id}")]
-        public async  Task<IActionResult> GetCity(
-            int id, bool includePointOfInterest = false)
+        public async Task<IActionResult> GetCity(
+            int id, bool includePointsOfInterest = false)
         {
-            var city = await _cityInfoRepository.GetCityAsync(id, includePointOfInterest);
-            if (city== null) 
+            var city = await _cityInfoRepository.GetCityAsync(id, includePointsOfInterest);
+            if (city == null)
             {
                 return NotFound();
             }
 
-            if (includePointOfInterest) 
+            if (includePointsOfInterest)
             {
                 return Ok(_mapper.Map<CityDto>(city));
             }
 
-            return Ok(_mapper.Map < CityWithoutPointsOfInterestDto>(city));
+            return Ok(_mapper.Map<CityWithoutPointsOfInterestDto>(city));
         }
     }
 }
